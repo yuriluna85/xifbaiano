@@ -32,8 +32,16 @@ Sistema serverless de sinalização digital (*Digital Signage*) para transmissã
 - Adicionados os botões **Transmitir para TV**, **Baixar JSON** (para commit no repositório) e **Restaurar Padrão** no painel admin.
 - Gerados os favicons oficiais do IF Baiano na pasta `assets/` (`favicon-98x98.png`, `favicon.png`, `favicon.svg` e `favicon.ico`) via script `generate_favicons.py`.
 
-- Desenvolvido o **System Design Oficial do IF Baiano** (`css/system-design-ifbaiano.css`) com as cores Verde Institucional (`#13884D`), Vermelho Destaque (`#C8191E`) e fundos noturnos otimizados para telas de TV.
+- **Autoplay Compulsório & Suporte a Mídias Verticais/Horizontais**: Atualizados o [player.js](file:///G:/Meu%20Drive/APP/2.%20Projetos%20e%20Aplica%C3%A7%C3%B5es/2.2%20Aplica%C3%A7%C3%B5es%20e%20C%C3%B3digos%20%28GitHub%29/IF%20Baiano%20APPs/mural-digital-ifbaiano/js/player.js) e o [player.css](file:///G:/Meu%20Drive/APP/2.%20Projetos%20e%20Aplica%C3%A7%C3%B5es/2.2%20Aplica%C3%A7%C3%B5es%20e%20C%C3%B3digos%20%28GitHub%29/IF%20Baiano%20APPs/mural-digital-ifbaiano/css/player.css) para:
+  1. Executar **Autoplay mudo compulsório** de vídeos sem requerer clique humano na TV.
+  2. Detectar dinamicamente a orientação de vídeos e imagens: Mídias na **Vertical (Reels/Shorts/9:16)** recebem moldura institucional centralizada e sombra noturna, enquanto mídias na **Horizontal (16:9)** ocupam a tela inteira.
+  3. Ajustar a **Duração Inteligente do Vídeo**: O player lê o tempo total real da mídia (`duration`) e só avança o slide quando o vídeo termina.
+  4. Suportar imagens e arquivos de vídeo nas pastas locais `assets/imagens/` e `assets/videos/` do repositório.
+
+
+
+
+
 - Implementado o **Player da TV (`player.html`)** com relógio em tempo real, rotação de slides, transições CSS3 e letreiro digital de notícias (Ticker Bar).
 - Implementado o **Painel Admin (`admin.html`)** autenticado via hash criptográfico SHA-256 para a senha `Dicom!@#123`.
 - Registrada a especificação técnica em `_System_Designs/IF_Baiano_APPs/system_design_mural_digital_ifbaiano.md`.
-

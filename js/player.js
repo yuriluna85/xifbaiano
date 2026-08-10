@@ -1,6 +1,12 @@
 /**
  * player.js - Motor de Exibição do Mural Digital IF Baiano (TV Display Mode)
  * DICOM / YLuna85 LABs
+ *
+ * Recursos Implementados:
+ * 1. Autoplay 100% compulsório mudo sem dependência de interação humana.
+ * 2. Detecção dinâmica de orientação (Horizontal 16:9 vs Vertical 9:16 / Reels / Shorts).
+ * 3. Duração Inteligente Baseada no Tempo Real do Vídeo (reproduz até o fim exato do vídeo).
+ * 4. Cache Offline de Mídias (Cache API) e integração direta com Google Drive.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -26,7 +32,40 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(atualizarRelogio, 1000);
   atualizarRelogio();
 
-  // 2. Carregar Playlist (Prioriza as alterações salvas no admin em localStorage)
+  // 2. Extração de ID de Arquivo do Google Drive
+  function extrairGoogleDriveId(url) {
+    if (!url) return null;
+    const matchId = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+    return matchId ? matchId[1] : null;
+  }
+
+  // 3. Sistema de Cache Offline de Mídias (Cache API)
+  async function obterMediaCachedUrl(urlOriginal) {
+    if (!urlOriginal || !('caches' in window)) return urlOriginal;
+
+    try {
+      const cacheStorage = await caches.open('mural_video_cache_v1');
+      const cachedResponse = await cacheStorage.match(urlOriginal);
+
+      if (cachedResponse) {
+        const blob = await cachedResponse.blob();
+        return URL.createObjectURL(blob);
+      }
+
+      if (navigator.onLine && (urlOriginal.endsWith('.mp4') || urlOriginal.includes('drive.google.com'))) {
+        fetch(urlOriginal).then(response => {
+          if (response.ok) {
+            cacheStorage.put(urlOriginal, response);
+          }
+        }).catch(err => console.warn('[CACHE] Falha ao pré-baixar mídia:', err));
+      }
+    } catch (e) {
+      console.warn('[CACHE] Erro no Cache API:', e);
+    }
+    return urlOriginal;
+  }
+
+  // 4. Carregar Playlist (Prioriza as alterações salvas no admin em localStorage)
   async function carregarPlaylist() {
     const custom = localStorage.getItem('mural_playlist_custom');
     if (custom) {
@@ -67,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Escutar sincronização ao vivo caso o admin seja alterado em outra aba do navegador
+  // Escutar sincronização ao vivo caso o admin seja alterado em outra aba
   window.addEventListener('storage', (e) => {
     if (e.key === 'mural_playlist_custom') {
       carregarPlaylist().then(() => {
@@ -78,8 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 3. Renderizador de Slide por Tipo
-  function exibirSlide() {
+  // 5. Renderizador de Slide por Tipo e Ajuste de Orientação
+  async function exibirSlide() {
     if (playlist.length === 0) return;
 
     if (indexAtual >= playlist.length) {
@@ -87,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const item = playlist[indexAtual];
-    const duracaoMs = (item.duracao_segundos || 10) * 1000;
+    let duracaoMs = (item.duracao_segundos || 10) * 1000;
 
     containerSlide.innerHTML = '';
     const wrapper = document.createElement('div');
@@ -104,37 +143,102 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
     } else if (item.tipo === 'imagem') {
+      const urlCached = await obterMediaCachedUrl(item.url || '');
       wrapper.innerHTML = `
-        <div class="slide-image-container">
-          <img src="${item.url}" alt="${item.titulo || 'Mídia IF Baiano'}">
+        <div class="slide-media-wrapper">
+          <img src="${urlCached}" alt="${item.titulo || 'Mídia IF Baiano'}">
         </div>
       `;
+
+      // Detecção de orientação da imagem (Horizontal vs Vertical)
+      const imgElem = wrapper.querySelector('img');
+      if (imgElem) {
+        imgElem.addEventListener('load', () => {
+          if (imgElem.naturalHeight > imgElem.naturalWidth) {
+            wrapper.classList.add('is-portrait');
+          } else {
+            wrapper.classList.add('is-landscape');
+          }
+        });
+      }
     } else if (item.tipo === 'video') {
-      const url = item.url || '';
+      const urlOriginal = item.url || '';
       let embedHtml = '';
 
-      if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      const driveId = extrairGoogleDriveId(urlOriginal);
+
+      if (driveId) {
+        const urlStreamDrive = `https://drive.google.com/uc?export=download&id=${driveId}`;
+        const urlCachedDrive = await obterMediaCachedUrl(urlStreamDrive);
+        const urlPreviewDrive = `https://drive.google.com/file/d/${driveId}/preview`;
+
+        embedHtml = `
+          <video src="${urlCachedDrive}" autoplay muted playsinline style="width:100%; height:100%; object-fit:contain; border-radius:16px;" onerror="this.outerHTML='<iframe src=\\'${urlPreviewDrive}?autoplay=1\\' frameborder=\\'0\\' style=\\'width:100%; height:100%; border-radius:16px;\\' allow=\\'autoplay; encrypted-media\\'></iframe>'"></video>
+        `;
+      } else if (urlOriginal.includes('youtube.com') || urlOriginal.includes('youtu.be')) {
         let videoId = '';
-        if (url.includes('youtu.be/')) {
-          videoId = url.split('youtu.be/')[1].split('?')[0];
-        } else if (url.includes('v=')) {
-          videoId = url.split('v=')[1].split('&')[0];
+        if (urlOriginal.includes('youtu.be/')) {
+          videoId = urlOriginal.split('youtu.be/')[1].split('?')[0];
+        } else if (urlOriginal.includes('v=')) {
+          videoId = urlOriginal.split('v=')[1].split('&')[0];
         }
         embedHtml = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1" frameborder="0" allow="autoplay; encrypted-media" style="width:100%; height:100%; border-radius:16px;"></iframe>`;
-      } else if (url.includes('drive.google.com')) {
-        let driveUrl = url.replace('/view', '/preview');
-        embedHtml = `<iframe src="${driveUrl}" frameborder="0" style="width:100%; height:100%; border-radius:16px;" allow="autoplay"></iframe>`;
-      } else if (url.includes('photos.app.goo.gl') || url.includes('photos.google.com')) {
-        embedHtml = `<iframe src="${url}" frameborder="0" style="width:100%; height:100%; border-radius:16px;" allow="autoplay"></iframe>`;
+      } else if (urlOriginal.includes('photos.app.goo.gl') || urlOriginal.includes('photos.google.com')) {
+        embedHtml = `
+          <div class="card-notice category-urgente" style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center;">
+            <span class="card-notice-badge">Usar o Google Drive</span>
+            <h2 class="card-notice-title">${item.titulo || 'Vídeo Grande'}</h2>
+            <p class="card-notice-body">
+              Para vídeos grandes sem estourar o espaço do GitHub, suba para o <strong>Google Drive</strong> e altere o compartilhamento para <em>"Qualquer pessoa com o link"</em>.<br><br>
+              O sistema baixará o vídeo para o cache local da TV e reproduzirá offline!
+            </p>
+          </div>
+        `;
       } else {
-        embedHtml = `<video src="${url}" autoplay muted playsinline style="width:100%; height:100%; object-fit:contain; border-radius:16px;"></video>`;
+        const urlCached = await obterMediaCachedUrl(urlOriginal);
+        embedHtml = `<video src="${urlCached}" autoplay muted playsinline style="width:100%; height:100%; object-fit:contain; border-radius:16px;"></video>`;
       }
 
       wrapper.innerHTML = `
-        <div class="slide-video-container" style="width:100%; height:100%;">
+        <div class="slide-media-wrapper">
           ${embedHtml}
         </div>
       `;
+
+      // Autoplay Forçado e Ajuste Dinâmico de Duração e Orientação do Vídeo
+      const videoElem = wrapper.querySelector('video');
+      if (videoElem) {
+        videoElem.muted = true;
+        videoElem.playsInline = true;
+
+        videoElem.addEventListener('loadedmetadata', () => {
+          // 1. Detecção de Orientação (Horizontal vs Vertical)
+          if (videoElem.videoHeight > videoElem.videoWidth) {
+            wrapper.classList.add('is-portrait');
+          } else {
+            wrapper.classList.add('is-landscape');
+          }
+
+          // 2. Duração Inteligente Baseada no Tempo Real do Vídeo
+          if (videoElem.duration && !isNaN(videoElem.duration) && videoElem.duration > 0) {
+            const duracaoRealMs = Math.ceil(videoElem.duration) * 1000;
+            if (timerSlide) clearTimeout(timerSlide);
+            timerSlide = setTimeout(exibirSlide, duracaoRealMs + 500);
+          }
+        });
+
+        // 3. Avançar Imediatamente quando o Vídeo Terminar
+        videoElem.addEventListener('ended', () => {
+          if (timerSlide) clearTimeout(timerSlide);
+          exibirSlide();
+        });
+
+        // Executar Autoplay
+        videoElem.play().catch(() => {
+          videoElem.muted = true;
+          videoElem.play();
+        });
+      }
     }
 
     containerSlide.appendChild(wrapper);
@@ -149,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
     timerSlide = setTimeout(exibirSlide, duracaoMs);
   }
 
-  // 4. Carregar Feed de Notícias no Ticker
+  // 6. Carregar Feed de Notícias no Ticker
   async function carregarNoticiasTicker() {
     if (!tickerMove) return;
     try {
