@@ -168,14 +168,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const driveId = extrairGoogleDriveId(urlOriginal);
 
       if (driveId) {
-        const urlStreamDrive = `https://drive.google.com/uc?export=download&id=${driveId}`;
+        const urlStreamDrive = `https://drive.usercontent.google.com/download?id=${driveId}&confirm=t`;
         const urlCachedDrive = await obterMediaCachedUrl(urlStreamDrive);
         const urlPreviewDrive = `https://drive.google.com/file/d/${driveId}/preview`;
 
         embedHtml = `
           <video src="${urlCachedDrive}" autoplay muted playsinline style="width:100%; height:100%; object-fit:contain; border-radius:16px;" onerror="this.outerHTML='<iframe src=\\'${urlPreviewDrive}?autoplay=1\\' frameborder=\\'0\\' style=\\'width:100%; height:100%; border-radius:16px;\\' allow=\\'autoplay; encrypted-media\\'></iframe>'"></video>
         `;
-      } else if (urlOriginal.includes('youtube.com') || urlOriginal.includes('youtu.be')) {
+      }
+ else if (urlOriginal.includes('youtube.com') || urlOriginal.includes('youtu.be')) {
         let videoId = '';
         if (urlOriginal.includes('youtu.be/')) {
           videoId = urlOriginal.split('youtu.be/')[1].split('?')[0];

@@ -32,11 +32,8 @@ Sistema serverless de sinalização digital (*Digital Signage*) para transmissã
 - Adicionados os botões **Transmitir para TV**, **Baixar JSON** (para commit no repositório) e **Restaurar Padrão** no painel admin.
 - Gerados os favicons oficiais do IF Baiano na pasta `assets/` (`favicon-98x98.png`, `favicon.png`, `favicon.svg` e `favicon.ico`) via script `generate_favicons.py`.
 
-- **Autoplay Compulsório & Suporte a Mídias Verticais/Horizontais**: Atualizados o [player.js](file:///G:/Meu%20Drive/APP/2.%20Projetos%20e%20Aplica%C3%A7%C3%B5es/2.2%20Aplica%C3%A7%C3%B5es%20e%20C%C3%B3digos%20%28GitHub%29/IF%20Baiano%20APPs/mural-digital-ifbaiano/js/player.js) e o [player.css](file:///G:/Meu%20Drive/APP/2.%20Projetos%20e%20Aplica%C3%A7%C3%B5es/2.2%20Aplica%C3%A7%C3%B5es%20e%20C%C3%B3digos%20%28GitHub%29/IF%20Baiano%20APPs/mural-digital-ifbaiano/css/player.css) para:
-  1. Executar **Autoplay mudo compulsório** de vídeos sem requerer clique humano na TV.
-  2. Detectar dinamicamente a orientação de vídeos e imagens: Mídias na **Vertical (Reels/Shorts/9:16)** recebem moldura institucional centralizada e sombra noturna, enquanto mídias na **Horizontal (16:9)** ocupam a tela inteira.
-  3. Ajustar a **Duração Inteligente do Vídeo**: O player lê o tempo total real da mídia (`duration`) e só avança o slide quando o vídeo termina.
-  4. Suportar imagens e arquivos de vídeo nas pastas locais `assets/imagens/` e `assets/videos/` do repositório.
+- **Autoplay Compulsório & Stream Direto do Google Drive**: Atualizado o [player.js](file:///G:/Meu%20Drive/APP/2.%20Projetos%20e%20Aplica%C3%A7%C3%B5es/2.2%20Aplica%C3%A7%C3%B5es%20e%20C%C3%B3digos%20%28GitHub%29/IF%20Baiano%20APPs/mural-digital-ifbaiano/js/player.js) com bypass direto da tela de confirmação do Google Drive (`confirm=t`), convertendo o link em stream de vídeo MP4 nativo HTML5. Isso ativa **Autoplay mudo automático**, leitura da **duração real exata do vídeo** (`duration`) e avanço automático ao terminar o vídeo (`ended`).
+
 
 
 
