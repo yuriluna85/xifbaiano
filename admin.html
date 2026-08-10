@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Gerenciador — Mural Digital DICOM IF Baiano</title>
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/system-design-ifbaiano.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+  <!-- Modal de Login -->
+  <div class="login-overlay" id="login-overlay">
+    <div class="login-card">
+      <div class="login-header">
+        <h2 style="color: var(--if-green-dark);">DICOM — IF Baiano</h2>
+        <p style="color:#64748b; font-size:0.9rem; margin-top:4px;">Painel de Controle do Mural Digital</p>
+      </div>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-password">Senha do Administrador:</label>
+          <input type="password" id="login-password" placeholder="Digite a senha institucional..." required autocomplete="current-password">
+        </div>
+        <div class="login-error" id="login-error">Senha incorreta. Verifique as credenciais da DICOM.</div>
+        <button type="submit" class="btn-primary" style="margin-top:15px;">Acessar Painel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Container Principal do Painel -->
+  <div class="admin-container">
+    <header class="admin-header-bar">
+      <div class="admin-title-group">
+        <h1>Gerenciador do Mural Digital</h1>
+        <p style="color:#64748b; font-size:0.85rem;">Diretoria de Comunicação Social (DICOM) — IF Baiano</p>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <a href="player.html" target="_blank" class="btn-primary" style="text-decoration:none; background:#0284c7; padding:8px 16px; font-size:0.9rem;">Ver Player na TV ↗</a>
+        <button id="btn-logout" class="btn-danger">Sair</button>
+      </div>
+    </header>
+
+    <div class="admin-grid">
+      <!-- Form de Adicionar Item -->
+      <section class="card-box">
+        <h3>Cadastrar Novo Aviso / Mídia</h3>
+        <form id="form-novo-item">
+          <div class="form-group">
+            <label for="item-tipo">Tipo de Mídia:</label>
+            <select id="item-tipo" required>
+              <option value="aviso_texto">Aviso em Texto (Card)</option>
+              <option value="imagem">Imagem / Banner / Cartaz</option>
+              <option value="video">Vídeo HTML5 (MP4)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="item-titulo">Título do Aviso / Chamada:</label>
+            <input type="text" id="item-titulo" placeholder="Ex.: Período de Rematrícula 2026.2" required>
+          </div>
+
+          <div class="form-group">
+            <label for="item-categoria">Categoria:</label>
+            <select id="item-categoria">
+              <option value="Institucional">Institucional</option>
+              <option value="Ensino & Acadêmico">Ensino & Acadêmico</option>
+              <option value="Assistência Estudantil">Assistência Estudantil</option>
+              <option value="Eventos & Extensão">Eventos & Extensão</option>
+              <option value="Urgente">Urgente / Alerta</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="item-duracao">Duração de Exibição (Segundos):</label>
+            <input type="number" id="item-duracao" value="10" min="3" max="120" required>
+          </div>
+
+          <div class="form-group">
+            <label for="item-conteudo">Conteúdo do Texto (para Avisos):</label>
+            <textarea id="item-conteudo" rows="4" placeholder="Escreva a mensagem clara do aviso que será exibido em tela cheia..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="item-url">URL da Mídia (para Imagens e Vídeos):</label>
+            <input type="url" id="item-url" placeholder="https://exemplo.com/imagem.png">
+          </div>
+
+          <button type="submit" class="btn-primary">+ Adicionar à Programação</button>
+        </form>
+      </section>
+
+      <!-- Lista de Itens na Playlist -->
+      <section class="card-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem; border-bottom:2px solid #f1f5f9; padding-bottom:8px;">
+          <h3 style="margin:0; border:none; padding:0;">Fila de Programação Atual</h3>
+          <button id="btn-salvar-tudo" class="btn-primary" style="padding:6px 14px; font-size:0.85rem; width:auto;">💾 Salvar Programação</button>
+        </div>
+
+        <div id="playlist-items-container" class="playlist-list">
+          <!-- Injetado via admin.js -->
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

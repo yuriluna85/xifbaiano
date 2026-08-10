@@ -1,0 +1,253 @@
+/* ==========================================================================
+   Player Display Mode (TV Full Screen)
+   Mural Digital IF Baiano - DICOM
+   ========================================================================== */
+
+#player-container {
+  display: grid;
+  grid-template-rows: 90px 1fr 60px;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-tv-dark);
+}
+
+/* 1. Cabeçalho Superior Institucional */
+.player-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  background: linear-gradient(180deg, var(--bg-tv-header) 0%, rgba(10, 79, 44, 0.85) 100%);
+  border-bottom: 3px solid var(--if-red-accent);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
+.brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.brand-symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.brand-symbol svg, .brand-symbol img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.brand-info h1 {
+  font-family: var(--font-family-title);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-light);
+  letter-spacing: 0.5px;
+}
+
+.brand-info p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.header-widgets {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.widget-time {
+  font-family: var(--font-family-title);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-light);
+  letter-spacing: 1px;
+}
+
+.widget-date {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+/* 2. Área de Exibição Principal do Slide */
+.player-main {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+  overflow: hidden;
+}
+
+.slide-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+}
+
+.slide-wrapper.active {
+  opacity: 1;
+}
+
+/* Slide: Card de Aviso de Texto */
+.card-notice {
+  width: 100%;
+  max-width: 1200px;
+  background: var(--bg-tv-card);
+  border: 2px solid var(--border-subtle);
+  border-left: 10px solid var(--if-green-primary);
+  border-radius: 20px;
+  padding: 3.5rem;
+  box-shadow: var(--shadow-tv-card);
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+  position: relative;
+}
+
+.card-notice.category-urgente {
+  border-left-color: var(--if-red-accent);
+}
+
+.card-notice-badge {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  background: var(--if-green-primary);
+  color: var(--text-light);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  border-radius: 6px;
+  letter-spacing: 1px;
+}
+
+.card-notice.category-urgente .card-notice-badge {
+  background: var(--if-red-accent);
+}
+
+.card-notice-title {
+  font-family: var(--font-family-title);
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: var(--text-light);
+  line-height: 1.25;
+}
+
+.card-notice-body {
+  font-size: 1.6rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* Slide: Imagem em Tela Cheia com Ken Burns Effect */
+.slide-image-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: var(--shadow-tv-card);
+}
+
+.slide-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: kenburns 15s ease infinite alternate;
+}
+
+@keyframes kenburns {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.06); }
+}
+
+/* Slide: Vídeo HTML5 */
+.slide-video-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-tv-card);
+}
+
+.slide-video-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* 3. Rodapé Informativo (Ticker News Bar) */
+.player-footer {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-tv-footer);
+  border-top: 1px solid var(--border-subtle);
+  overflow: hidden;
+  position: relative;
+}
+
+.ticker-label {
+  background: var(--if-red-accent);
+  color: var(--text-light);
+  font-family: var(--font-family-title);
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  padding: 0 1.5rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  z-index: 5;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.ticker-wrap {
+  width: 100%;
+  overflow: hidden;
+}
+
+.ticker-move {
+  display: inline-block;
+  white-space: nowrap;
+  animation: ticker 35s linear infinite;
+  padding-left: 100%;
+}
+
+.ticker-item {
+  display: inline-block;
+  font-size: 1.1rem;
+  color: var(--text-light);
+  margin-right: 3rem;
+  font-weight: 500;
+}
+
+.ticker-item span.ticker-date {
+  color: var(--text-accent);
+  margin-right: 8px;
+  font-weight: 700;
+}
+
+@keyframes ticker {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-100%, 0, 0); }
+}

@@ -1,0 +1,34 @@
+{
+  "versao": "1.0.0",
+  "atualizado_em": "2026-08-10 15:24:00",
+  "tempo_padrao_slide": 10,
+  "itens": [
+    {
+      "id": "item-001",
+      "tipo": "aviso_texto",
+      "titulo": "Bem-vindo ao IF Baiano",
+      "conteudo": "Confira os avisos, comunicados e eventos oficiais do nosso campus no Mural Digital da DICOM.",
+      "categoria": "Institucional",
+      "duracao_segundos": 10,
+      "ativo": true
+    },
+    {
+      "id": "item-002",
+      "tipo": "aviso_texto",
+      "titulo": "Processo Seletivo & Rematrículas",
+      "conteudo": "Acesse o SUAP para conferir os prazos de rematrícula e validação de documentos acadêmicos.",
+      "categoria": "Ensino & Acadêmico",
+      "duracao_segundos": 12,
+      "ativo": true
+    },
+    {
+      "id": "item-003",
+      "tipo": "aviso_texto",
+      "titulo": "Assistência Estudantil",
+      "conteudo": "Inscrições abertas para os auxílios de permanência estudantil. Dúvidas no setor de Assistência do Campus.",
+      "categoria": "Assistência Estudantil",
+      "duracao_segundos": 10,
+      "ativo": true
+    }
+  ]
+}

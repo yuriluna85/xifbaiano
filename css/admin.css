@@ -1,0 +1,214 @@
+/* ==========================================================================
+   Painel de Controle Admin (DICOM)
+   Mural Digital IF Baiano
+   ========================================================================== */
+
+body.admin-body {
+  background-color: hsl(220, 20%, 97%);
+  color: hsl(220, 20%, 15%);
+  overflow-y: auto;
+}
+
+.admin-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* 1. Modal de Login */
+.login-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.login-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  border: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.login-header {
+  margin-bottom: 1.8rem;
+}
+
+.login-header h2 {
+  font-family: var(--font-family-title);
+  color: var(--if-green-dark);
+  font-size: 1.5rem;
+  margin-top: 10px;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  color: #334155;
+}
+
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: var(--font-family-base);
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  outline: none;
+  border-color: var(--if-green-primary);
+  box-shadow: 0 0 0 3px rgba(19, 136, 77, 0.15);
+}
+
+.btn-primary {
+  background: var(--if-green-primary);
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background: var(--if-green-dark);
+}
+
+.btn-danger {
+  background: var(--if-red-accent);
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  background: var(--if-red-hover);
+}
+
+/* 2. Dashboard do Painel */
+.admin-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 1.2rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+  border-left: 6px solid var(--if-green-primary);
+}
+
+.admin-title-group h1 {
+  font-family: var(--font-family-title);
+  font-size: 1.4rem;
+  color: var(--if-green-dark);
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 2rem;
+}
+
+@media (max-width: 850px) {
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card-box {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.8rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.card-box h3 {
+  font-family: var(--font-family-title);
+  font-size: 1.2rem;
+  color: var(--if-green-dark);
+  margin-bottom: 1.2rem;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 8px;
+}
+
+/* Lista de Itens da Playlist */
+.playlist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.playlist-card-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  transition: border-color 0.2s;
+}
+
+.playlist-card-item:hover {
+  border-color: var(--if-green-primary);
+}
+
+.item-info-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.item-info-sub {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.item-badge {
+  display: inline-block;
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 6px;
+}
+
+.login-error {
+  color: var(--if-red-accent);
+  font-size: 0.85rem;
+  margin-top: 10px;
+  display: none;
+}

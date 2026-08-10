@@ -1,0 +1,47 @@
+/* ==========================================================================
+   System Design Specification - IF Baiano (DICOM)
+   Cores Oficiais, Tipografia e Tokens Globais para Mural Digital
+   ========================================================================== */
+
+:root {
+  /* Cores Institucionais Oficiais do IF Baiano (Manual de Marca) */
+  --if-green-primary: hsl(152, 68%, 28%);   /* #13884D - Verde Institucional */
+  --if-green-dark: hsl(152, 70%, 18%);      /* #0A4F2C - Verde Escuro de Suporte */
+  --if-green-light: hsl(152, 50%, 92%);     /* #E6F5ED - Verde Suave */
+  --if-red-accent: hsl(358, 78%, 44%);      /* #C8191E - Vermelho Fruto / Destaque */
+  --if-red-hover: hsl(358, 80%, 36%);       /* #9E1014 - Vermelho Hover */
+  
+  /* Cores de Superfície do Player (TV Display Mode) */
+  --bg-tv-dark: hsl(215, 28%, 12%);         /* #141A24 - Fundo Noturno de Alta Legibilidade */
+  --bg-tv-card: hsl(215, 25%, 17%);         /* #202938 - Container de Avisos */
+  --bg-tv-header: hsl(152, 68%, 20%);       /* Barra de Topo Institucional */
+  --bg-tv-footer: hsl(215, 30%, 10%);       /* Rodapé Informativo Ticker */
+
+  /* Cores de Texto e Destaques */
+  --text-light: hsl(0, 0%, 98%);            /* #FAFAFA - Texto Principal */
+  --text-muted: hsl(215, 12%, 75%);         /* #B8C2CC - Legendas e Metadados */
+  --text-accent: hsl(45, 100%, 55%);        /* #FFC107 - Amarelo Alerta / Destaque */
+
+  /* Bordas e Sombras */
+  --border-subtle: rgba(255, 255, 255, 0.12);
+  --border-green: var(--if-green-primary);
+  --shadow-tv-card: 0 12px 32px rgba(0, 0, 0, 0.5);
+
+  /* Tipografia Oficial de Comunicação Pública */
+  --font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family-title: 'Outfit', 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family-base);
+  background-color: var(--bg-tv-dark);
+  color: var(--text-light);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mural Digital IF Baiano — Display TV</title>
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/system-design-ifbaiano.css">
+  <link rel="stylesheet" href="css/player.css">
+</head>
+<body>
+
+  <div id="player-container">
+    <!-- 1. Cabeçalho Superior Institucional -->
+    <header class="player-header">
+      <div class="brand-wrapper">
+        <div class="brand-symbol">
+          <!-- Logotipo Simbólico IF Baiano (Vetor SVG) -->
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="10" width="36" height="36" rx="6" fill="#13884D"/>
+            <rect x="54" y="10" width="36" height="36" rx="6" fill="#13884D"/>
+            <rect x="10" y="54" width="36" height="36" rx="6" fill="#C8191E"/>
+            <rect x="54" y="54" width="36" height="36" rx="6" fill="#13884D"/>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <h1>IF BAIANO</h1>
+          <p>Instituto Federal de Educação, Ciência e Tecnologia Baiano</p>
+        </div>
+      </div>
+
+      <div class="header-widgets">
+        <div>
+          <div class="widget-time" id="clock-display">00:00:00</div>
+          <div class="widget-date" id="date-display">Segunda-feira, 10 de Agosto</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 2. Área Principal do Slide -->
+    <main class="player-main" id="slide-container">
+      <!-- Injetado dinamicamente via player.js -->
+    </main>
+
+    <!-- 3. Rodapé Informativo (Ticker Bar) -->
+    <footer class="player-footer">
+      <div class="ticker-label">NOTÍCIAS & INFORME</div>
+      <div class="ticker-wrap">
+        <div class="ticker-move" id="ticker-move">
+          <div class="ticker-item"><span class="ticker-date">[DICOM]</span> Mural Digital do IF Baiano ativo para transmissão de avisos nos campi.</div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="js/player.js"></script>
+</body>
+</html>
