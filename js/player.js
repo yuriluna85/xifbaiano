@@ -5,7 +5,7 @@
  * Recursos Implementados:
  * 1. Autoplay 100% compulsório mudo sem dependência de interação humana.
  * 2. Detecção dinâmica de orientação (Horizontal 16:9 vs Vertical 9:16 / Reels / Shorts).
- * 3. Duração Inteligente Baseada no Tempo Real do Vídeo (reproduz até o fim exato do vídeo).
+ * 3. Duração Inteligente do Vídeo: O timer do slide aguarda a finalização REAL do vídeo.
  * 4. Cache Offline de Mídias (Cache API) e integração direta com Google Drive.
  */
 
@@ -117,16 +117,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 5. Renderizador de Slide por Tipo e Ajuste de Orientação
+  // 5. Renderizador de Slide por Tipo e Controle Estrito de Duração
   async function exibirSlide() {
     if (playlist.length === 0) return;
+
+    if (timerSlide) {
+      clearTimeout(timerSlide);
+      timerSlide = null;
+    }
 
     if (indexAtual >= playlist.length) {
       indexAtual = 0;
     }
 
     const item = playlist[indexAtual];
-    let duracaoMs = (item.duracao_segundos || 10) * 1000;
+    const duracaoPadraoMs = (item.duracao_segundos || 10) * 1000;
 
     containerSlide.innerHTML = '';
     const wrapper = document.createElement('div');
@@ -142,6 +147,10 @@ document.addEventListener('DOMContentLoaded', () => {
           <p class="card-notice-body">${item.conteudo || ''}</p>
         </div>
       `;
+      // Timer fixo para cards de texto
+      indexAtual++;
+      timerSlide = setTimeout(exibirSlide, duracaoPadraoMs);
+
     } else if (item.tipo === 'imagem') {
       const urlCached = await obterMediaCachedUrl(item.url || '');
       wrapper.innerHTML = `
@@ -150,7 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
 
-      // Detecção de orientação da imagem (Horizontal vs Vertical)
       const imgElem = wrapper.querySelector('img');
       if (imgElem) {
         imgElem.addEventListener('load', () => {
@@ -161,6 +169,11 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
       }
+
+      // Timer fixo para imagens
+      indexAtual++;
+      timerSlide = setTimeout(exibirSlide, duracaoPadraoMs);
+
     } else if (item.tipo === 'video') {
       const urlOriginal = item.url || '';
       let embedHtml = '';
@@ -175,8 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         embedHtml = `
           <video src="${urlCachedDrive}" autoplay muted playsinline style="width:100%; height:100%; object-fit:contain; border-radius:16px;" onerror="this.outerHTML='<iframe src=\\'${urlPreviewDrive}?autoplay=1\\' frameborder=\\'0\\' style=\\'width:100%; height:100%; border-radius:16px;\\' allow=\\'autoplay; encrypted-media\\'></iframe>'"></video>
         `;
-      }
- else if (urlOriginal.includes('youtube.com') || urlOriginal.includes('youtu.be')) {
+      } else if (urlOriginal.includes('youtube.com') || urlOriginal.includes('youtu.be')) {
         let videoId = '';
         if (urlOriginal.includes('youtu.be/')) {
           videoId = urlOriginal.split('youtu.be/')[1].split('?')[0];
@@ -206,35 +218,45 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
 
-      // Autoplay Forçado e Ajuste Dinâmico de Duração e Orientação do Vídeo
+      indexAtual++;
+
+      // Timer de Segurança Inicial para Vídeo (120s max fallback)
+      timerSlide = setTimeout(() => {
+        console.warn('[MURAL TV] Vídeo estourou o tempo limite de segurança, avançando...');
+        exibirSlide();
+      }, 120000);
+
+      // Controle de Duração Real e Avanço pelo Evento 'ended'
       const videoElem = wrapper.querySelector('video');
       if (videoElem) {
         videoElem.muted = true;
         videoElem.playsInline = true;
 
         videoElem.addEventListener('loadedmetadata', () => {
-          // 1. Detecção de Orientação (Horizontal vs Vertical)
+          // Detecção de Orientação (Horizontal vs Vertical)
           if (videoElem.videoHeight > videoElem.videoWidth) {
             wrapper.classList.add('is-portrait');
           } else {
             wrapper.classList.add('is-landscape');
           }
 
-          // 2. Duração Inteligente Baseada no Tempo Real do Vídeo
+          // Re-agendar o timer para quando o vídeo realmente terminar
           if (videoElem.duration && !isNaN(videoElem.duration) && videoElem.duration > 0) {
-            const duracaoRealMs = Math.ceil(videoElem.duration) * 1000;
+            const duracaoExataMs = Math.ceil(videoElem.duration) * 1000;
+            console.log(`[MURAL TV] Ajustada duração exata para o tempo do vídeo: ${videoElem.duration}s`);
             if (timerSlide) clearTimeout(timerSlide);
-            timerSlide = setTimeout(exibirSlide, duracaoRealMs + 500);
+            timerSlide = setTimeout(exibirSlide, duracaoExataMs + 800);
           }
         });
 
-        // 3. Avançar Imediatamente quando o Vídeo Terminar
+        // Avanço instantâneo quando o evento 'ended' dispara no final do vídeo
         videoElem.addEventListener('ended', () => {
+          console.log('[MURAL TV] Evento de término de vídeo disparado, avançando slide...');
           if (timerSlide) clearTimeout(timerSlide);
           exibirSlide();
         });
 
-        // Executar Autoplay
+        // Executar Autoplay compulsório
         videoElem.play().catch(() => {
           videoElem.muted = true;
           videoElem.play();
@@ -248,10 +270,6 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(() => {
       wrapper.classList.add('active');
     });
-
-    indexAtual++;
-    if (timerSlide) clearTimeout(timerSlide);
-    timerSlide = setTimeout(exibirSlide, duracaoMs);
   }
 
   // 6. Carregar Feed de Notícias no Ticker

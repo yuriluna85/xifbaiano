@@ -32,7 +32,8 @@ Sistema serverless de sinalização digital (*Digital Signage*) para transmissã
 - Adicionados os botões **Transmitir para TV**, **Baixar JSON** (para commit no repositório) e **Restaurar Padrão** no painel admin.
 - Gerados os favicons oficiais do IF Baiano na pasta `assets/` (`favicon-98x98.png`, `favicon.png`, `favicon.svg` e `favicon.ico`) via script `generate_favicons.py`.
 
-- **Autoplay Compulsório & Stream Direto do Google Drive**: Atualizado o [player.js](file:///G:/Meu%20Drive/APP/2.%20Projetos%20e%20Aplica%C3%A7%C3%B5es/2.2%20Aplica%C3%A7%C3%B5es%20e%20C%C3%B3digos%20%28GitHub%29/IF%20Baiano%20APPs/mural-digital-ifbaiano/js/player.js) com bypass direto da tela de confirmação do Google Drive (`confirm=t`), convertendo o link em stream de vídeo MP4 nativo HTML5. Isso ativa **Autoplay mudo automático**, leitura da **duração real exata do vídeo** (`duration`) e avanço automático ao terminar o vídeo (`ended`).
+- **Autoplay Compulsório & Controle Dinâmico de Tempo**: Atualizado o [player.js](file:///G:/Meu%20Drive/APP/2.%20Projetos%20e%20Aplica%C3%A7%C3%B5es/2.2%20Aplica%C3%A7%C3%B5es%20e%20C%C3%B3digos%20%28GitHub%29/IF%20Baiano%20APPs/mural-digital-ifbaiano/js/player.js) corrigindo o temporizador de vídeos. Para cartazes e comunicados em texto é mantido o tempo configurado (ex.: 10s), enquanto para vídeos o cronômetro é **100% guiado pela duração real exata da mídia** (`video.duration` e evento `ended`), impedindo que vídeos longos sejam cortados aos 10 segundos.
+
 
 
 
