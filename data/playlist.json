@@ -1,6 +1,6 @@
 {
   "versao": "1.0.1",
-  "atualizado_em": "2026-08-10 16:13:00",
+  "atualizado_em": "2026-08-10T19:52:21.987Z",
   "tempo_padrao_slide": 10,
   "itens": [
     {
@@ -13,30 +13,23 @@
       "ativo": true
     },
     {
-      "id": "item-004",
-      "tipo": "video",
-      "titulo": "Vídeo Institucional — IF Baiano",
-      "url": "https://drive.google.com/file/d/1XkPJ9hZGC2t7lD04JRWOxvVHXZ4ObmMy/view?usp=sharing",
+      "id": "item-1786390604817",
+      "tipo": "aviso_texto",
+      "titulo": "Olá Pedro",
       "categoria": "Institucional",
-      "duracao_segundos": 25,
-      "ativo": true
-    },
-    {
-      "id": "item-002",
-      "tipo": "aviso_texto",
-      "titulo": "Processo Seletivo & Rematrículas",
-      "conteudo": "Acesse o SUAP para conferir os prazos de rematrícula e validação de documentos acadêmicos.",
-      "categoria": "Ensino & Acadêmico",
-      "duracao_segundos": 12,
-      "ativo": true
-    },
-    {
-      "id": "item-003",
-      "tipo": "aviso_texto",
-      "titulo": "Assistência Estudantil",
-      "conteudo": "Inscrições abertas para os auxílios de permanência estudantil. Dúvidas no setor de Assistência do Campus.",
-      "categoria": "Assistência Estudantil",
       "duracao_segundos": 10,
+      "conteudo": "Aqui é um teste de interface",
+      "url": "",
+      "ativo": true
+    },
+    {
+      "id": "item-1786390727187",
+      "tipo": "aviso_texto",
+      "titulo": "Matricula",
+      "categoria": "Eventos & Extensão",
+      "duracao_segundos": 10,
+      "conteudo": "Texto de matricula de eventos",
+      "url": "",
       "ativo": true
     }
   ]
