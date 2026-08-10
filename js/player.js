@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(atualizarRelogio, 1000);
   atualizarRelogio();
 
-  // 2. Carregar Playlist (Prioriza as alterações feitas no admin em localStorage)
+  // 2. Carregar Playlist (Prioriza as alterações salvas no admin em localStorage)
   async function carregarPlaylist() {
     const custom = localStorage.getItem('mural_playlist_custom');
     if (custom) {
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Escutar sincronização ao vivo caso o admin seja alterado em outra aba
+  // Escutar sincronização ao vivo caso o admin seja alterado em outra aba do navegador
   window.addEventListener('storage', (e) => {
     if (e.key === 'mural_playlist_custom') {
       carregarPlaylist().then(() => {
@@ -77,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   });
-
 
   // 3. Renderizador de Slide por Tipo
   function exibirSlide() {
@@ -111,9 +110,29 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
     } else if (item.tipo === 'video') {
+      const url = item.url || '';
+      let embedHtml = '';
+
+      if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        let videoId = '';
+        if (url.includes('youtu.be/')) {
+          videoId = url.split('youtu.be/')[1].split('?')[0];
+        } else if (url.includes('v=')) {
+          videoId = url.split('v=')[1].split('&')[0];
+        }
+        embedHtml = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1" frameborder="0" allow="autoplay; encrypted-media" style="width:100%; height:100%; border-radius:16px;"></iframe>`;
+      } else if (url.includes('drive.google.com')) {
+        let driveUrl = url.replace('/view', '/preview');
+        embedHtml = `<iframe src="${driveUrl}" frameborder="0" style="width:100%; height:100%; border-radius:16px;" allow="autoplay"></iframe>`;
+      } else if (url.includes('photos.app.goo.gl') || url.includes('photos.google.com')) {
+        embedHtml = `<iframe src="${url}" frameborder="0" style="width:100%; height:100%; border-radius:16px;" allow="autoplay"></iframe>`;
+      } else {
+        embedHtml = `<video src="${url}" autoplay muted playsinline style="width:100%; height:100%; object-fit:contain; border-radius:16px;"></video>`;
+      }
+
       wrapper.innerHTML = `
-        <div class="slide-video-container">
-          <video src="${item.url}" autoplay muted playsinline></video>
+        <div class="slide-video-container" style="width:100%; height:100%;">
+          ${embedHtml}
         </div>
       `;
     }
@@ -126,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     indexAtual++;
+    if (timerSlide) clearTimeout(timerSlide);
     timerSlide = setTimeout(exibirSlide, duracaoMs);
   }
 
@@ -156,7 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
     await carregarNoticiasTicker();
     exibirSlide();
 
-    // Polling a cada 60 segundos para atualizar a playlist sem reiniciar a exibição
     setInterval(carregarPlaylist, 60000);
     setInterval(carregarNoticiasTicker, 300000);
   }
