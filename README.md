@@ -32,7 +32,9 @@ Sistema serverless de sinalização digital (*Digital Signage*) para transmissã
 - Adicionados os botões **Transmitir para TV**, **Baixar JSON** (para commit no repositório) e **Restaurar Padrão** no painel admin.
 - Gerados os favicons oficiais do IF Baiano na pasta `assets/` (`favicon-98x98.png`, `favicon.png`, `favicon.svg` e `favicon.ico`) via script `generate_favicons.py`.
 
-- **Autoplay Compulsório & Controle Dinâmico de Tempo**: Atualizado o [player.js](file:///G:/Meu%20Drive/APP/2.%20Projetos%20e%20Aplica%C3%A7%C3%B5es/2.2%20Aplica%C3%A7%C3%B5es%20e%20C%C3%B3digos%20%28GitHub%29/IF%20Baiano%20APPs/mural-digital-ifbaiano/js/player.js) corrigindo o temporizador de vídeos. Para cartazes e comunicados em texto é mantido o tempo configurado (ex.: 10s), enquanto para vídeos o cronômetro é **100% guiado pela duração real exata da mídia** (`video.duration` e evento `ended`), impedindo que vídeos longos sejam cortados aos 10 segundos.
+- **Publicação Automática na Nuvem via GitHub REST API**: Implementada no [admin.js](file:///G:/Meu%20Drive/APP/2.%20Projetos%20e%20Aplica%C3%A7%C3%B5es/2.2%20Aplica%C3%A7%C3%B5es%20e%20C%C3%B3digos%20%28GitHub%29/IF%20Baiano%20APPs/mural-digital-ifbaiano/js/admin.js) a gravação remota direta do arquivo `data/playlist.json` no repositório GitHub via Token de Acesso Pessoal (PAT). Ao clicar em **Transmitir para TV**, o painel efetua o commit na nuvem e publica as alterações para **todas as TVs e monitores** de todos os campi do IF Baiano em até 60 segundos.
+
+
 
 
 

@@ -1,6 +1,6 @@
 /**
  * admin.js - Gerenciador do Painel da DICOM / IF Baiano
- * Permite cadastrar, editar, desativar e ordenar mídias da playlist.
+ * Permite cadastrar, editar, desativar, ordenar e PUBLICAR a playlist no GitHub.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,9 +14,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const playlistContainer = document.getElementById('playlist-items-container');
   const btnSalvarTudo = document.getElementById('btn-salvar-tudo');
 
+  const inputGithubRepo = document.getElementById('github-repo');
+  const inputGithubToken = document.getElementById('github-token');
+  const btnSalvarGithubConfig = document.getElementById('btn-salvar-github-config');
+
   let playlistLocal = [];
 
-  // 1. Checagem de Autenticação
+  // 1. Carregar Configurações Salvas do GitHub
+  if (inputGithubRepo) {
+    inputGithubRepo.value = localStorage.getItem('mural_github_repo') || 'yuriluna85/mural-digital-ifbaiano';
+  }
+  if (inputGithubToken) {
+    inputGithubToken.value = localStorage.getItem('mural_github_token') || '';
+  }
+
+  if (btnSalvarGithubConfig) {
+    btnSalvarGithubConfig.addEventListener('click', () => {
+      localStorage.setItem('mural_github_repo', inputGithubRepo.value.trim());
+      localStorage.setItem('mural_github_token', inputGithubToken.value.trim());
+      alert('Configurações e Token do GitHub salvos com sucesso!');
+    });
+  }
+
+  // 2. Checagem de Autenticação
   if (usuarioEstaAutenticado()) {
     loginOverlay.style.display = 'none';
     carregarDadosAdmin();
@@ -44,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 2. Carregar Playlist (Prioriza a playlist customizada salva pelo usuário)
+  // 3. Carregar Playlist (Prioriza a playlist customizada salva no navegador)
   async function carregarDadosAdmin() {
     const custom = localStorage.getItem('mural_playlist_custom');
     if (custom) {
@@ -69,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderizarListaAdmin();
   }
 
-  // 3. Renderizar Lista de Itens no Painel
+  // 4. Renderizar Lista de Itens no Painel
   function renderizarListaAdmin() {
     if (!playlistContainer) return;
     playlistContainer.innerHTML = '';
@@ -107,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // 4. Cadastrar Novo Item
+  // 5. Cadastrar Novo Item
   if (formNovoItem) {
     formNovoItem.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -136,15 +156,89 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5. Salvar Playlist e Notificar Player em Tempo Real
+  // 6. Função de Publicação Remota no GitHub (Commit via REST API)
+  async function publicarNoGitHub(playlistObj) {
+    const repo = localStorage.getItem('mural_github_repo') || 'yuriluna85/mural-digital-ifbaiano';
+    const token = localStorage.getItem('mural_github_token');
+
+    if (!token) {
+      alert('Para publicar as alterações para TODAS as TVs do IF Baiano via nuvem, insira o seu GitHub Token no painel superior.');
+      return false;
+    }
+
+    try {
+      const urlApi = `https://api.github.com/repos/${repo}/contents/data/playlist.json`;
+
+      // 1. Obter o SHA do arquivo atual
+      const resGet = await fetch(urlApi, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      });
+
+      let sha = '';
+      if (resGet.ok) {
+        const dataGet = await resGet.json();
+        sha = dataGet.sha;
+      }
+
+      // 2. Converter o JSON para Base64 com suporte a UTF-8
+      const jsonString = JSON.stringify(playlistObj, null, 2);
+      const contentBase64 = btoa(unescape(encodeURIComponent(jsonString)));
+
+      // 3. Fazer o Commit PUT na API do GitHub
+      const resPut = await fetch(urlApi, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/vnd.github.v3+json'
+        },
+        body: JSON.stringify({
+          message: 'Atualização de Playlist via Painel Admin DICOM (Mural Digital)',
+          content: contentBase64,
+          sha: sha || undefined
+        })
+      });
+
+      if (resPut.ok) {
+        alert('✨ SUCESSO! A nova programação foi gravada diretamente no GitHub e será distribuída para TODAS as TVs do IF Baiano em até 60 segundos.');
+        return true;
+      } else {
+        const errData = await resPut.json();
+        alert(`Falha ao gravar no GitHub: ${errData.message || 'Verifique o Token e o Repositório.'}`);
+        return false;
+      }
+    } catch (e) {
+      console.error('[GITHUB COMMIT ERRO]', e);
+      alert(`Erro de conexão com a API do GitHub: ${e.message}`);
+      return false;
+    }
+  }
+
+  // 7. Salvar Playlist e Publicar no GitHub
   if (btnSalvarTudo) {
-    btnSalvarTudo.addEventListener('click', () => {
+    btnSalvarTudo.addEventListener('click', async () => {
       localStorage.setItem('mural_playlist_custom', JSON.stringify(playlistLocal));
-      alert('Programação salva e transmitida com sucesso para o Player da TV!');
+
+      const playlistObj = {
+        versao: '1.0.1',
+        atualizado_em: new Date().toISOString(),
+        tempo_padrao_slide: 10,
+        itens: playlistLocal
+      };
+
+      const token = localStorage.getItem('mural_github_token');
+      if (token) {
+        await publicarNoGitHub(playlistObj);
+      } else {
+        alert('Programação salva localmente nesta TV! Para sincronizar com TODAS as TVs do IF Baiano, insira o seu GitHub Token no painel superior.');
+      }
     });
   }
 
-  // 6. Restaurar Padrão Inicial
+  // 8. Restaurar Padrão Inicial
   const btnRestaurarPadrao = document.getElementById('btn-restaurar-padrao');
   if (btnRestaurarPadrao) {
     btnRestaurarPadrao.addEventListener('click', () => {
@@ -156,12 +250,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 7. Baixar Arquivo JSON da Playlist
+  // 9. Baixar Arquivo JSON da Playlist
   const btnBaixarJson = document.getElementById('btn-baixar-json');
   if (btnBaixarJson) {
     btnBaixarJson.addEventListener('click', () => {
       const conteudoJson = JSON.stringify({
-        versao: '1.0.0',
+        versao: '1.0.1',
         atualizado_em: new Date().toISOString(),
         tempo_padrao_slide: 10,
         itens: playlistLocal

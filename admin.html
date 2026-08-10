@@ -46,9 +46,29 @@
         <a href="player.html" target="_blank" class="btn-primary" style="text-decoration:none; background:#0284c7; padding:8px 16px; font-size:0.9rem;">Ver Player na TV ↗</a>
         <button id="btn-logout" class="btn-danger">Sair</button>
       </div>
-    </header>
+    <!-- Painel de Conexão e Publicação Remota no GitHub -->
+    <div class="card-box" style="margin-bottom: 2rem; border-left: 6px solid #0284c7;">
+      <h3 style="color:#0284c7; margin-bottom: 0.8rem;">☁️ Conexão e Publicação Automática no GitHub Pages</h3>
+      <p style="color:#64748b; font-size:0.9rem; margin-bottom: 1rem;">
+        Insira abaixo o seu Token do GitHub (PAT) para que qualquer alteração feita no painel grave diretamente o arquivo <code>data/playlist.json</code> no repositório. Todas as TVs dos campi receberão a nova programação automaticamente na nuvem.
+      </p>
+      <div style="display:grid; grid-template-columns: 1fr 1.5fr 1fr; gap:12px; align-items:end;">
+        <div class="form-group" style="margin:0;">
+          <label for="github-repo">Repositório Remoto:</label>
+          <input type="text" id="github-repo" value="yuriluna85/mural-digital-ifbaiano" placeholder="usuario/repositorio">
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label for="github-token">GitHub Token (PAT com escrita):</label>
+          <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        </div>
+        <div>
+          <button id="btn-salvar-github-config" class="btn-primary" style="background:#0284c7;">💾 Salvar Token</button>
+        </div>
+      </div>
+    </div>
 
     <div class="admin-grid">
+
       <!-- Form de Adicionar Item -->
       <section class="card-box">
         <h3>Cadastrar Novo Aviso / Mídia</h3>

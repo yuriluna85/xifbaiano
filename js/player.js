@@ -2,11 +2,11 @@
  * player.js - Motor de Exibição do Mural Digital IF Baiano (TV Display Mode)
  * DICOM / YLuna85 LABs
  *
- * Recursos Implementados:
- * 1. Autoplay 100% compulsório mudo sem dependência de interação humana.
- * 2. Detecção dinâmica de orientação (Horizontal 16:9 vs Vertical 9:16 / Reels / Shorts).
- * 3. Duração Inteligente do Vídeo: O timer do slide aguarda a finalização REAL do vídeo.
- * 4. Cache Offline de Mídias (Cache API) e integração direta com Google Drive.
+ * Máquina de Estados:
+ * 1. Mídias em Texto/Imagem: Timer fixo de exibição.
+ * 2. Mídias em Vídeo: Pausa o timer geral. Executa o vídeo completo sem 'loop'.
+ *    Ao terminar o vídeo ('ended') ou ocorrer erro ('error'), retoma e avança o slide imediatamente.
+ * 3. Vídeos em iFrame (YouTube/Drive Embed): Utiliza a duração configurada no admin.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return urlOriginal;
   }
 
-  // 4. Carregar Playlist (Prioriza as alterações salvas no admin em localStorage)
+  // 4. Carregar Playlist
   async function carregarPlaylist() {
     const custom = localStorage.getItem('mural_playlist_custom');
     if (custom) {
@@ -111,13 +111,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'mural_playlist_custom') {
       carregarPlaylist().then(() => {
         indexAtual = 0;
-        if (timerSlide) clearTimeout(timerSlide);
-        exibirSlide();
+        avancarProximoSlide();
       });
     }
   });
 
-  // 5. Renderizador de Slide por Tipo e Controle Estrito de Duração
+  // Função Auxiliar de Transição de Slides Seguro
+  function avancarProximoSlide() {
+    if (timerSlide) {
+      clearTimeout(timerSlide);
+      timerSlide = null;
+    }
+    exibirSlide();
+  }
+
+  // 5. Renderizador de Slide com Pausa e Retomada de Sequência
   async function exibirSlide() {
     if (playlist.length === 0) return;
 
@@ -147,9 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <p class="card-notice-body">${item.conteudo || ''}</p>
         </div>
       `;
-      // Timer fixo para cards de texto
       indexAtual++;
-      timerSlide = setTimeout(exibirSlide, duracaoPadraoMs);
+      timerSlide = setTimeout(avancarProximoSlide, duracaoPadraoMs);
 
     } else if (item.tipo === 'imagem') {
       const urlCached = await obterMediaCachedUrl(item.url || '');
@@ -170,9 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
 
-      // Timer fixo para imagens
       indexAtual++;
-      timerSlide = setTimeout(exibirSlide, duracaoPadraoMs);
+      timerSlide = setTimeout(avancarProximoSlide, duracaoPadraoMs);
 
     } else if (item.tipo === 'video') {
       const urlOriginal = item.url || '';
@@ -185,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const urlCachedDrive = await obterMediaCachedUrl(urlStreamDrive);
         const urlPreviewDrive = `https://drive.google.com/file/d/${driveId}/preview`;
 
+        // ATENÇÃO: Sem a propriedade 'loop', para que o evento 'ended' seja disparado no final
         embedHtml = `
           <video src="${urlCachedDrive}" autoplay muted playsinline style="width:100%; height:100%; object-fit:contain; border-radius:16px;" onerror="this.outerHTML='<iframe src=\\'${urlPreviewDrive}?autoplay=1\\' frameborder=\\'0\\' style=\\'width:100%; height:100%; border-radius:16px;\\' allow=\\'autoplay; encrypted-media\\'></iframe>'"></video>
         `;
@@ -195,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (urlOriginal.includes('v=')) {
           videoId = urlOriginal.split('v=')[1].split('&')[0];
         }
-        embedHtml = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1" frameborder="0" allow="autoplay; encrypted-media" style="width:100%; height:100%; border-radius:16px;"></iframe>`;
+        embedHtml = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0" frameborder="0" allow="autoplay; encrypted-media" style="width:100%; height:100%; border-radius:16px;"></iframe>`;
       } else if (urlOriginal.includes('photos.app.goo.gl') || urlOriginal.includes('photos.google.com')) {
         embedHtml = `
           <div class="card-notice category-urgente" style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center;">
@@ -220,13 +227,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       indexAtual++;
 
-      // Timer de Segurança Inicial para Vídeo (120s max fallback)
+      // Timer de fallback padrão para iFrames/Embeds que não disparam evento HTML5 'ended'
       timerSlide = setTimeout(() => {
-        console.warn('[MURAL TV] Vídeo estourou o tempo limite de segurança, avançando...');
-        exibirSlide();
-      }, 120000);
+        console.log('[MURAL TV] Tempo limite da mídia atingido, avançando slide...');
+        avancarProximoSlide();
+      }, Math.max(duracaoPadraoMs, 15000));
 
-      // Controle de Duração Real e Avanço pelo Evento 'ended'
+      // Se for elemento <video> nativo, controlar rigorosamente o término ('ended') e duração
       const videoElem = wrapper.querySelector('video');
       if (videoElem) {
         videoElem.muted = true;
@@ -240,23 +247,26 @@ document.addEventListener('DOMContentLoaded', () => {
             wrapper.classList.add('is-landscape');
           }
 
-          // Re-agendar o timer para quando o vídeo realmente terminar
+          // Atualiza o timer de segurança para o tempo real do vídeo + 1 segundo
           if (videoElem.duration && !isNaN(videoElem.duration) && videoElem.duration > 0) {
             const duracaoExataMs = Math.ceil(videoElem.duration) * 1000;
-            console.log(`[MURAL TV] Ajustada duração exata para o tempo do vídeo: ${videoElem.duration}s`);
+            console.log(`[MURAL TV] Vídeo detectado (${videoElem.duration}s). Timer de segurança estendido para ${videoElem.duration}s.`);
             if (timerSlide) clearTimeout(timerSlide);
-            timerSlide = setTimeout(exibirSlide, duracaoExataMs + 800);
+            timerSlide = setTimeout(avancarProximoSlide, duracaoExataMs + 1200);
           }
         });
 
-        // Avanço instantâneo quando o evento 'ended' dispara no final do vídeo
+        // QUANDO O VÍDEO TERMINAR: Retoma a apresentação de slides imediatamente!
         videoElem.addEventListener('ended', () => {
-          console.log('[MURAL TV] Evento de término de vídeo disparado, avançando slide...');
-          if (timerSlide) clearTimeout(timerSlide);
-          exibirSlide();
+          console.log('[MURAL TV] Vídeo finalizado nativamente! Retomando apresentação de slides...');
+          avancarProximoSlide();
         });
 
-        // Executar Autoplay compulsório
+        videoElem.addEventListener('error', (err) => {
+          console.warn('[MURAL TV] Erro no vídeo, avançando para o próximo slide...', err);
+          avancarProximoSlide();
+        });
+
         videoElem.play().catch(() => {
           videoElem.muted = true;
           videoElem.play();
