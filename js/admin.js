@@ -44,8 +44,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 2. Carregar Playlist
+  // 2. Carregar Playlist (Prioriza a playlist customizada salva pelo usuário)
   async function carregarDadosAdmin() {
+    const custom = localStorage.getItem('mural_playlist_custom');
+    if (custom) {
+      try {
+        playlistLocal = JSON.parse(custom);
+        renderizarListaAdmin();
+        return;
+      } catch (e) {
+        console.warn('[ADMIN] Erro no JSON customizado:', e);
+      }
+    }
+
     try {
       const res = await fetch(`data/playlist.json?t=${Date.now()}`);
       if (res.ok) {
@@ -53,9 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         playlistLocal = dados.itens || [];
       }
     } catch (e) {
-      console.warn('[ADMIN] Usando playlist salva no cache local');
-      const cache = localStorage.getItem('mural_playlist_cache');
-      if (cache) playlistLocal = JSON.parse(cache);
+      console.warn('[ADMIN] Falha ao carregar playlist estática inicial');
     }
     renderizarListaAdmin();
   }
@@ -127,11 +136,45 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5. Salvar Playlist
+  // 5. Salvar Playlist e Notificar Player em Tempo Real
   if (btnSalvarTudo) {
     btnSalvarTudo.addEventListener('click', () => {
-      localStorage.setItem('mural_playlist_cache', JSON.stringify(playlistLocal));
-      alert('Playlist atualizada com sucesso! A nova programação já está sendo transmitida para as TVs do campus.');
+      localStorage.setItem('mural_playlist_custom', JSON.stringify(playlistLocal));
+      alert('Programação salva e transmitida com sucesso para o Player da TV!');
+    });
+  }
+
+  // 6. Restaurar Padrão Inicial
+  const btnRestaurarPadrao = document.getElementById('btn-restaurar-padrao');
+  if (btnRestaurarPadrao) {
+    btnRestaurarPadrao.addEventListener('click', () => {
+      if (confirm('Deseja restaurar a programação padrão original?')) {
+        localStorage.removeItem('mural_playlist_custom');
+        carregarDadosAdmin();
+        alert('Programação padrão restaurada.');
+      }
+    });
+  }
+
+  // 7. Baixar Arquivo JSON da Playlist
+  const btnBaixarJson = document.getElementById('btn-baixar-json');
+  if (btnBaixarJson) {
+    btnBaixarJson.addEventListener('click', () => {
+      const conteudoJson = JSON.stringify({
+        versao: '1.0.0',
+        atualizado_em: new Date().toISOString(),
+        tempo_padrao_slide: 10,
+        itens: playlistLocal
+      }, null, 2);
+
+      const blob = new Blob([conteudoJson], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'playlist.json';
+      a.click();
+      URL.revokeObjectURL(url);
     });
   }
 });
+

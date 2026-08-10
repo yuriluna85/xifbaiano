@@ -26,8 +26,22 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(atualizarRelogio, 1000);
   atualizarRelogio();
 
-  // 2. Carregar Playlist de data/playlist.json com fallback para localStorage
+  // 2. Carregar Playlist (Prioriza as alterações feitas no admin em localStorage)
   async function carregarPlaylist() {
+    const custom = localStorage.getItem('mural_playlist_custom');
+    if (custom) {
+      try {
+        const itensCustom = JSON.parse(custom);
+        const ativos = (itensCustom || []).filter(item => item.ativo !== false);
+        if (ativos.length > 0) {
+          playlist = ativos;
+          return;
+        }
+      } catch (e) {
+        console.warn('[MURAL TV] Erro ao carregar playlist customizada:', e);
+      }
+    }
+
     try {
       const res = await fetch(`data/playlist.json?t=${Date.now()}`);
       if (res.ok) {
@@ -35,15 +49,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const itensAtivos = (dados.itens || []).filter(item => item.ativo !== false);
         if (itensAtivos.length > 0) {
           playlist = itensAtivos;
-          localStorage.setItem('mural_playlist_cache', JSON.stringify(playlist));
         }
       }
     } catch (e) {
-      console.warn('[MURAL TV] Falha na rede, carregando cache local...', e);
-      const cache = localStorage.getItem('mural_playlist_cache');
-      if (cache) {
-        playlist = JSON.parse(cache);
-      }
+      console.warn('[MURAL TV] Falha na rede ao carregar playlist estática...', e);
     }
 
     if (playlist.length === 0) {
@@ -57,6 +66,18 @@ document.addEventListener('DOMContentLoaded', () => {
       }];
     }
   }
+
+  // Escutar sincronização ao vivo caso o admin seja alterado em outra aba
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'mural_playlist_custom') {
+      carregarPlaylist().then(() => {
+        indexAtual = 0;
+        if (timerSlide) clearTimeout(timerSlide);
+        exibirSlide();
+      });
+    }
+  });
+
 
   // 3. Renderizador de Slide por Tipo
   function exibirSlide() {

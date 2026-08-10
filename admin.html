@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel Gerenciador — Mural Digital DICOM IF Baiano</title>
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="assets/favicon-98x98.png" type="image/png" sizes="98x98">
+  <link rel="icon" href="assets/favicon.png" type="image/png" sizes="32x32">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
@@ -95,10 +99,15 @@
 
       <!-- Lista de Itens na Playlist -->
       <section class="card-box">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem; border-bottom:2px solid #f1f5f9; padding-bottom:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem; border-bottom:2px solid #f1f5f9; padding-bottom:8px; flex-wrap:wrap; gap:8px;">
           <h3 style="margin:0; border:none; padding:0;">Fila de Programação Atual</h3>
-          <button id="btn-salvar-tudo" class="btn-primary" style="padding:6px 14px; font-size:0.85rem; width:auto;">💾 Salvar Programação</button>
+          <div style="display:flex; gap:6px;">
+            <button id="btn-salvar-tudo" class="btn-primary" style="padding:6px 12px; font-size:0.85rem; width:auto;">💾 Transmitir para TV</button>
+            <button id="btn-baixar-json" class="btn-primary" style="padding:6px 12px; font-size:0.85rem; width:auto; background:#0284c7;">📥 Baixar JSON</button>
+            <button id="btn-restaurar-padrao" class="btn-danger" style="padding:6px 12px; font-size:0.85rem; width:auto;">🔄 Restaurar Padrão</button>
+          </div>
         </div>
+
 
         <div id="playlist-items-container" class="playlist-list">
           <!-- Injetado via admin.js -->

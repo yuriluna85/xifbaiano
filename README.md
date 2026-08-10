@@ -27,9 +27,13 @@ Sistema serverless de sinalização digital (*Digital Signage*) para transmissã
 
 ## 📋 Log de Atualizações (Changelog)
 
-### [10/08/2026] - Versão Inicial 1.0.0
-- Criada a estrutura do projeto sob a assinatura da Diretoria de Comunicação Social (DICOM) do IF Baiano.
+### [10/08/2026] - Versão 1.0.1
+- **Correção da Persistência e Sincronização em Tempo Real**: Ajustados os scripts [player.js](file:///G:/Meu%20Drive/APP/2.%20Projetos%20e%20Aplica%C3%A7%C3%B5es/2.2%20Aplica%C3%A7%C3%B5es%20e%20C%C3%B3digos%20%28GitHub%29/IF%20Baiano%20APPs/mural-digital-ifbaiano/js/player.js) e [admin.js](file:///G:/Meu%20Drive/APP/2.%20Projetos%20e%20Aplica%C3%A7%C3%B5es/2.2%20Aplica%C3%A7%C3%B5es%20e%20C%C3%B3digos%20%28GitHub%29/IF%20Baiano%20APPs/mural-digital-ifbaiano/js/admin.js) para priorizar as alterações da playlist salvas localmente (`mural_playlist_custom`), ativando transmissão instantânea entre abas via `storage event`.
+- Adicionados os botões **Transmitir para TV**, **Baixar JSON** (para commit no repositório) e **Restaurar Padrão** no painel admin.
+- Gerados os favicons oficiais do IF Baiano na pasta `assets/` (`favicon-98x98.png`, `favicon.png`, `favicon.svg` e `favicon.ico`) via script `generate_favicons.py`.
+
 - Desenvolvido o **System Design Oficial do IF Baiano** (`css/system-design-ifbaiano.css`) com as cores Verde Institucional (`#13884D`), Vermelho Destaque (`#C8191E`) e fundos noturnos otimizados para telas de TV.
 - Implementado o **Player da TV (`player.html`)** com relógio em tempo real, rotação de slides, transições CSS3 e letreiro digital de notícias (Ticker Bar).
 - Implementado o **Painel Admin (`admin.html`)** autenticado via hash criptográfico SHA-256 para a senha `Dicom!@#123`.
 - Registrada a especificação técnica em `_System_Designs/IF_Baiano_APPs/system_design_mural_digital_ifbaiano.md`.
+
