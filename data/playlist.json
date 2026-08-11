@@ -1,6 +1,6 @@
 {
   "versao": "1.0.1",
-  "atualizado_em": "2026-08-11T16:47:29.927Z",
+  "atualizado_em": "2026-08-11T16:48:32.968Z",
   "tempo_padrao_slide": 10,
   "itens": [
     {
@@ -10,24 +10,6 @@
       "conteudo": "Confira os avisos, comunicados e eventos oficiais do nosso campus no Mural Digital da DICOM.",
       "categoria": "Institucional",
       "duracao_segundos": 10,
-      "ativo": true
-    },
-    {
-      "id": "item-004",
-      "tipo": "video",
-      "titulo": "Vídeo Institucional — IF Baiano",
-      "url": "https://drive.google.com/file/d/1XkPJ9hZGC2t7lD04JRWOxvVHXZ4ObmMy/view?usp=sharing",
-      "categoria": "Institucional",
-      "duracao_segundos": 25,
-      "ativo": true
-    },
-    {
-      "id": "item-002",
-      "tipo": "aviso_texto",
-      "titulo": "Processo Seletivo & Rematrículas",
-      "conteudo": "Acesse o SUAP para conferir os prazos de rematrícula e validação de documentos acadêmicos.",
-      "categoria": "Ensino & Acadêmico",
-      "duracao_segundos": 12,
       "ativo": true
     },
     {
